@@ -1,0 +1,7 @@
+CREATE TABLE data (
+  id BIGSERIAL PRIMARY KEY,
+  type VARCHAR(100),
+  path VARCHAR(255) NOT NULL
+);
+
+
