@@ -2,6 +2,7 @@ package http
 
 import (
 	"file-server-go/handlers/db"
+	"file-server-go/shared/types"
 	"net/http"
 	"os"
 	"strconv"
@@ -10,31 +11,29 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-
 func DeleteHandler(c *gin.Context, pool *pgxpool.Pool) {
-	id := c.Param("id")	
+	id := c.Param("id")
 
 	intId, err := strconv.Atoi(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid ID!"})
+		c.Error(types.ErrBadRequest)
 		return
 	}
 
 	filePath, err := db.GetFilePath(pool, intId)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error! Please later again!"})
+		c.Error(types.ErrInternalServer)
 	}
 
 	err = os.Remove(filePath)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error! Please later again!"})
+		c.Error(types.ErrInternalServer)
 		return
 	}
 
-
 	err = db.DeleteHandler(pool, intId)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error! Please later again!"})
+		c.Error(types.ErrInternalServer)
 		return
 	}
 

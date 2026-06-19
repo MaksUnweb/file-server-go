@@ -2,7 +2,7 @@ package db
 
 import (
 	"context"
-	"file-server-go/interfaces"
+	"file-server-go/shared/interfaces"
 )
 
 

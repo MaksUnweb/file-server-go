@@ -6,6 +6,7 @@ import (
 	"log"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"file-server-go/shared/types"
 )
 
 
@@ -13,6 +14,7 @@ func main() {
 
 	router := gin.Default()
 	router.MaxMultipartMemory = 256 << 20 // 256MB
+	router.Use(types.ErrorHandler())
 	db_url := "postgres://Admin:1111@127.0.0.1:5432/file_db"
 	pool,err := connect_db(db_url)
 	if err != nil {

@@ -3,6 +3,7 @@ package http
 import (
 	"file-server-go/handlers/db"
 	"file-server-go/handlers/mechanics"
+	"file-server-go/shared/types"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -16,7 +17,7 @@ func SaveOneHandler(c *gin.Context, pool *pgxpool.Pool) {
 
 	file, err := c.FormFile("file")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "There was a problem when receiving the file! Try again later!"})
+		c.Error(types.ErrBadRequest)
 		return
 	}
 
@@ -26,14 +27,14 @@ func SaveOneHandler(c *gin.Context, pool *pgxpool.Pool) {
 	err =	c.SaveUploadedFile(file, dst)
 	if err != nil {
 		log.Printf("Error save file: %s", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error! Try again later!"})
+		c.Error(types.ErrInternalServer)
 		return
 	}
 
 	err = db.InsertHandler(pool, dst, fileType)
 	if err != nil {
 		log.Printf("Error insert into database: %s", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error! Try again later!"})
+		c.Error(types.ErrInternalServer)
 		return
 	}
 

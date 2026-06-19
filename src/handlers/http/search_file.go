@@ -1,9 +1,8 @@
 package http
 
 import (
-	"net/http"
+	"file-server-go/shared/types"
 	"strconv"
-
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -14,18 +13,18 @@ import (
 func SearchFile(c *gin.Context, pool *pgxpool.Pool) {
 	id := c.Query("fileId")	
 	if id == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "No argument id!"})
+		c.Error(types.ErrBadRequest)
 		return
 	}
 	intId, err := strconv.Atoi(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Incorrect arg!"})
+		c.Error(types.ErrBadRequest)
 		return
 	}
 
 	filePath, err := db.GetFilePath(pool, intId)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error! Please repeat later!"})
+		c.Error(types.ErrInternalServer)
 		return
 	}
 

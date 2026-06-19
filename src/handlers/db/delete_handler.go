@@ -2,7 +2,7 @@ package db
 
 import (
 	"context"
-	"file-server-go/interfaces"
+	"file-server-go/shared/interfaces"
 )
 
 func DeleteHandler[T interfaces.Queries](conn T, id int) error {
