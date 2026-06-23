@@ -13,7 +13,7 @@ import (
 )
 
 
-func SaveOneHandler(c *gin.Context, pool *pgxpool.Pool) {
+func SaveOneHandler(c *gin.Context, pool *pgxpool.Pool, filePath string) {
 
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -23,7 +23,7 @@ func SaveOneHandler(c *gin.Context, pool *pgxpool.Pool) {
 
 	fileType := mechanics.Filter(file.Filename)
 
-	dst := filepath.Join("./files/", filepath.Base(file.Filename))
+	dst := filepath.Join(filePath, filepath.Base(file.Filename))
 	err =	c.SaveUploadedFile(file, dst)
 	if err != nil {
 		log.Printf("Error save file: %s", err)

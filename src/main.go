@@ -3,37 +3,48 @@ package main
 import (
 	"context"
 	"file-server-go/handlers/http"
+	"file-server-go/shared/types"
 	"log"
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"file-server-go/shared/types"
 )
 
 
 func main() {
+	//Get filepath from store data:
+	filePath, isExists := os.LookupEnv("FILE_PATH")
+	if !isExists {
+		log.Fatal("Error! No filepath in system environment!")
+	}
+	dbUrl, isExists := os.LookupEnv("DB_URL")
+
+	if !isExists {
+		log.Fatal("Error! No database url in system environment!")
+	}
 
 	router := gin.Default()
 	router.MaxMultipartMemory = 256 << 20 // 256MB
 	router.Use(types.ErrorHandler())
-	db_url := "postgres://Admin:1111@127.0.0.1:5432/file_db"
-	pool,err := connect_db(db_url)
+	pool,err := connect_db(dbUrl)
 	if err != nil {
 		log.Fatal("Database not work: ", err)
 	}
 
 	router.GET("/", http.HomeHandler)
 	router.POST("/save-one", func(c *gin.Context) {
-			http.SaveOneHandler(c, pool)
+			http.SaveOneHandler(c, pool, filePath)
 	})
 	router.POST("save-several", func(c *gin.Context) {
-		http.SaveSeveralHandler(c, pool)	
+		http.SaveSeveralHandler(c, pool, filePath)	
 	})
 	router.DELETE("/delete/:id", func(c *gin.Context) {
 			http.DeleteHandler(c, pool)
 	})
 
-	router.GET("/search-file", func(c *gin.Context) {
-		http.SearchFile(c, pool)
+	router.GET("/download-file", func(c *gin.Context) {
+		http.DownloadFile(c, pool)
 	})
 	
 	router.Run(":8080")

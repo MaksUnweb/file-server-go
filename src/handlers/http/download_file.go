@@ -10,7 +10,7 @@ import (
 )
 
 //Func for return file. If file uknown or server is error, return JSON-message:
-func SearchFile(c *gin.Context, pool *pgxpool.Pool) {
+func DownloadFile(c *gin.Context, pool *pgxpool.Pool) {
 	id := c.Query("fileId")	
 	if id == "" {
 		c.Error(types.ErrBadRequest)

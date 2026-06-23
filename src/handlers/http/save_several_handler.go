@@ -13,7 +13,7 @@ import (
 )
 
 
-func SaveSeveralHandler(c *gin.Context, pool *pgxpool.Pool) {
+func SaveSeveralHandler(c *gin.Context, pool *pgxpool.Pool, filePath string) {
 	form, err := c.MultipartForm()
 	if err != nil {
 		c.Error(types.ErrBadRequest)
@@ -22,7 +22,7 @@ func SaveSeveralHandler(c *gin.Context, pool *pgxpool.Pool) {
 	files := form.File["files"]
 
 	for _, file := range files {
-		dst := filepath.Join("./files/", filepath.Base(file.Filename))
+		dst := filepath.Join(filePath, filepath.Base(file.Filename))
 		fileType := mechanics.Filter(file.Filename)
 		err := c.SaveUploadedFile(file, dst)
 		if err != nil {
